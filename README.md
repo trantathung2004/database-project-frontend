@@ -18,8 +18,8 @@ This is the frontend application for our Stack Overflow Survey Analysis database
    ```
 
 3. **Start Development Server**
-```bash
-npm run dev
-```
+   ```bash
+   npm run dev
+   ```
 
 The application will be available at the URL displayed in your terminal (typically `http://localhost:3000`).
