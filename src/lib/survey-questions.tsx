@@ -15,10 +15,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { BarChart3, FileText, History, LogOut } from "lucide-react";
+import { BarChart3, FileText, History, LogOut, ClipboardList } from "lucide-react";
 import SurveyTab from "@/components/survey-tab";
 import AnalysisTab from "@/components/analysis-tab";
 import HistoryTab from "@/components/history-tab";
+import AuditLogsTab from "@/components/audit-logs-tab";
 
 const surveyQuestions: Question[] = [
   {
@@ -564,6 +565,15 @@ export default function SurveyApp() {
                   <span>History</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  onClick={() => setActiveTab("logs")}
+                  isActive={activeTab === "logs"}
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  <span>Audit Logs</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
 
             <div className="mt-auto p-4">
@@ -587,6 +597,7 @@ export default function SurveyApp() {
                 {activeTab === "survey" && "Developer Survey"}
                 {activeTab === "analysis" && "Survey Analysis"}
                 {activeTab === "history" && "Your Survey History"}
+                {activeTab === "logs" && "Audit Logs"}
               </h1>
             </div>
           </header>
@@ -609,6 +620,7 @@ export default function SurveyApp() {
                 isCompleted={isCompleted}
               />
             )}
+            {activeTab === "logs" && <AuditLogsTab />}
           </div>
         </main>
       </div>

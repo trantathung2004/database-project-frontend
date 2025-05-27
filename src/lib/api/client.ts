@@ -42,6 +42,19 @@ export interface HistoryResponse extends SurveyData {
   UID: number;
 }
 
+export interface AuditLog {
+  log_id: number;
+  response_id: number;
+  user_id: number;
+  action_type: string;
+  action_timestamp: string;
+  old_value: string | null;
+  new_value: string | null;
+  question_id: number;
+  username: string;
+  question_name: string;
+}
+
 export const api = {
   auth: {
     register: async (credentials: RegisterCredentials) => {
@@ -169,6 +182,19 @@ export const api = {
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || "Failed to fetch history");
+      }
+
+      return response.json();
+    },
+
+    getAuditLogs: async (): Promise<AuditLog[]> => {
+      const response = await fetch("/api/audit-logs", {
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || errorData.message || "Failed to fetch audit logs");
       }
 
       return response.json();
