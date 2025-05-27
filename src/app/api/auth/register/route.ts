@@ -43,7 +43,7 @@ export async function POST(request: Request) {
       });
       throw new Error(
         errorData.message ||
-          `Registration failed with status ${response.status}`
+          `${errorData['detail']}`
       );
     }
 
