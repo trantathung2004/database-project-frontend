@@ -29,7 +29,8 @@ export default function HistoryTab({
   isCompleted,
 }: HistoryTabProps) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [historyData, setHistoryData] = useState<HistoryResponse | null>(null);
+  const [currentResponseIndex, setCurrentResponseIndex] = useState(0);
+  const [historyData, setHistoryData] = useState<HistoryResponse[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -48,7 +49,7 @@ export default function HistoryTab({
       console.log("[DEBUG] Raw history data:", data);
 
       if (data && data.length > 0) {
-        setHistoryData(data[0]); // Get the first response since we only have one per user
+        setHistoryData(data);
       } else {
         setHistoryData(null);
       }
@@ -94,6 +95,31 @@ export default function HistoryTab({
     }
   };
 
+  const getAnswerForQuestion = (question: Question): string | null => {
+    if (!historyData || historyData.length === 0) return null;
+    const response = historyData[currentResponseIndex];
+    const value = response[question.qname as keyof HistoryResponse];
+    return value !== undefined && value !== null ? String(value) : null;
+  };
+
+  const answeredQuestionsCount = questions.reduce((count, question) => {
+    return getAnswerForQuestion(question) !== null ? count + 1 : count;
+  }, 0);
+
+  const nextResponse = () => {
+    if (currentResponseIndex < (historyData?.length || 0) - 1) {
+      setCurrentResponseIndex(currentResponseIndex + 1);
+    }
+  };
+
+  const prevResponse = () => {
+    if (currentResponseIndex > 0) {
+      setCurrentResponseIndex(currentResponseIndex - 1);
+    }
+  };
+
+  const totalResponses = historyData?.length || 0;
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -132,15 +158,6 @@ export default function HistoryTab({
       </div>
     );
   }
-
-  const getAnswerForQuestion = (question: Question): string | null => {
-    const value = historyData[question.qname as keyof HistoryResponse];
-    return value !== undefined && value !== null ? String(value) : null;
-  };
-
-  const answeredQuestionsCount = questions.reduce((count, question) => {
-    return getAnswerForQuestion(question) !== null ? count + 1 : count;
-  }, 0);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -213,7 +230,7 @@ export default function HistoryTab({
         </CardContent>
       </Card>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
         <Button
           variant="outline"
           onClick={prevQuestion}
@@ -234,6 +251,30 @@ export default function HistoryTab({
         >
           Next
         </Button>
+      </div>
+
+      <div className="flex justify-center items-center gap-4 pt-4 border-t">
+        <div className="text-sm text-muted-foreground">
+          Response {currentResponseIndex + 1} of {totalResponses}
+        </div>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={prevResponse}
+            disabled={currentResponseIndex === 0}
+          >
+            Previous Response
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={nextResponse}
+            disabled={currentResponseIndex === totalResponses - 1}
+          >
+            Next Response
+          </Button>
+        </div>
       </div>
     </div>
   );
