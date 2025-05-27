@@ -1,0 +1,3 @@
+- npm i
+- cp env.example .env, paste url BE deploy
+- npm run dev
